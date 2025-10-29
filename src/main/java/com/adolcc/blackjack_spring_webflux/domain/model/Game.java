@@ -24,4 +24,20 @@ public class Game {
     public void playerHit() {
         player.getHand().addCard(deck.drawCard());
     }
+    public void dealerPlay() {
+        while (dealer.getHand().getTotal() < 17) {
+            dealer.getHand().addCard(deck.drawCard());
+        }
+    }
+
+    public String determineWinner() {
+        Hand playerHand = player.getHand();
+        Hand dealerHand = dealer.getHand();
+        if (playerHand.isBust()) return "DEALER_WINS";
+        if (dealerHand.isBust()) return "PLAYER_WINS";
+        int comparison = Integer.compare(playerHand.getTotal(), dealerHand.getTotal());
+        if (comparison > 0) return "PLAYER_WINS";
+        if (comparison < 0) return "DEALER_WINS";
+        return "TIE";
+    }
 }
