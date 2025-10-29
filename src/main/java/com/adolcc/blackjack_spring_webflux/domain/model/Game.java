@@ -74,4 +74,23 @@ public class Game {
         if (comparison < 0) return "DEALER_WINS";
         return "TIE";
     }
+
+    public void settleGame() {
+        String result = determineWinner();
+
+        switch (result) {
+            case "PLAYER_WINS":
+                if (player.getHand().isBlackjack()) {
+                    player.addBalance(betAmount * 2.5);
+                } else {
+                    player.addBalance(betAmount * 2.0);
+                }
+                break;
+            case "TIE":
+                player.addBalance(betAmount);
+                break;
+            case "DEALER_WINS":
+                break;
+        }
+    }
 }
