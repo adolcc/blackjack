@@ -6,4 +6,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class Player {
     private String name;
+    private double balance;
 }

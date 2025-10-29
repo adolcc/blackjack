@@ -4,11 +4,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTest {
+
     @Test
-    void shouldCreatePlayerWithName() {
+    void shouldCreatePlayerWithInitialBalance() {
         String playerName = "Jordan";
-        Player player = new Player(playerName);
+        double initialBalance = 1000.0;
+        Player player = new Player(playerName, initialBalance);
         assertNotNull(player);
-        assertEquals(playerName, player.getName());
+        assertEquals("Jordan", player.getName());
+        assertEquals(1000.0, player.getBalance());
     }
 }
