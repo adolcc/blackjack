@@ -1,17 +1,21 @@
 package com.adolcc.blackjack_spring_webflux.domain.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class Game {
     private final Player player;
     private final Player dealer;
     private final Deck deck;
+    @Setter
+    private GameState state;
 
     public Game(Player player) {
         this.player = player;
         this.dealer = new Player("Dealer", 0);
         this.deck = new Deck();
+        this.state = GameState.BETTING;
     }
 
     public void start() {
@@ -20,14 +24,29 @@ public class Game {
         player.getHand().addCard(deck.drawCard());
         dealer.getHand().addCard(deck.drawCard());
         dealer.getHand().addCard(deck.drawCard());
+        this.state = GameState.PLAYER_TURN;
     }
+
     public void playerHit() {
         player.getHand().addCard(deck.drawCard());
+
+        if (player.getHand().isBust()) {
+            this.state = GameState.FINISHED;
+        }
     }
+
     public void dealerPlay() {
+        this.state = GameState.DEALER_TURN;
+
         while (dealer.getHand().getTotal() < 17) {
             dealer.getHand().addCard(deck.drawCard());
         }
+
+        this.state = GameState.FINISHED;
+    }
+
+    public void playerStand() {
+        this.state = GameState.DEALER_TURN;
     }
 
     public String determineWinner() {

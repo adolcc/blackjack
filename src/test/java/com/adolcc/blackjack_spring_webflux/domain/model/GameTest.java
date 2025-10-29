@@ -91,4 +91,50 @@ class GameTest {
         String result = game.determineWinner();
         assertEquals("TIE", result);
     }
+    @Test
+    void shouldStartInBettingState() {
+        Player player = new Player("John", 1000.0);
+        Game game = new Game(player);
+        assertEquals(GameState.BETTING, game.getState());
+    }
+
+    @Test
+    void shouldMoveToPlayerTurnAfterStart() {
+        Player player = new Player("John", 1000.0);
+        Game game = new Game(player);
+        game.start();
+        assertEquals(GameState.PLAYER_TURN, game.getState());
+    }
+
+    @Test
+    void shouldMoveToDealerTurnWhenPlayerStands() {
+        Player player = new Player("John", 1000.0);
+        Game game = new Game(player);
+        game.start();
+        game.playerStand();
+        assertEquals(GameState.DEALER_TURN, game.getState());
+    }
+
+    @Test
+    void shouldMoveToFinishedAfterDealerPlays() {
+        Player player = new Player("John", 1000.0);
+        Game game = new Game(player);
+        game.start();
+        game.playerStand();
+        game.dealerPlay();
+        assertEquals(GameState.FINISHED, game.getState());
+    }
+
+    @Test
+    void shouldMoveToFinishedWhenPlayerBusts() {
+        Player player = new Player("John", 1000.0);
+        Game game = new Game(player);
+        player.getHand().addCard(new Card("K", "HEARTS"));
+        player.getHand().addCard(new Card("Q", "DIAMONDS"));
+        game.setState(GameState.PLAYER_TURN);
+        game.playerHit();
+        if (player.getHand().isBust()) {
+            assertEquals(GameState.FINISHED, game.getState());
+        }
+    }
 }
