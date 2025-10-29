@@ -10,12 +10,27 @@ public class Game {
     private final Deck deck;
     @Setter
     private GameState state;
+    private double betAmount;
 
     public Game(Player player) {
         this.player = player;
         this.dealer = new Player("Dealer", 0);
         this.deck = new Deck();
         this.state = GameState.BETTING;
+        this.betAmount = 0.0;
+    }
+
+    public void placeBet(double amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Bet amount must be greater than zero");
+        }
+
+        if (amount > player.getBalance()) {
+            throw new IllegalArgumentException("Bet amount cannot exceed player balance");
+        }
+
+        this.betAmount = amount;
+        player.deductBalance(amount);
     }
 
     public void start() {

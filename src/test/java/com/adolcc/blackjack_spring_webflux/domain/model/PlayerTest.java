@@ -23,4 +23,26 @@ public class PlayerTest {
         assertNotNull(player.getHand());
         assertEquals(0, player.getHand().getTotal());
     }
+    @Test
+    void shouldDeductBalanceSuccessfully() {
+        Player player = new Player("John", 1000.0);
+        player.deductBalance(200.0);
+        assertEquals(800.0, player.getBalance());
+    }
+
+    @Test
+    void shouldNotAllowDeductMoreThanBalance() {
+        Player player = new Player("John", 1000.0);
+        assertThrows(IllegalArgumentException.class, () -> {
+            player.deductBalance(1500.0);
+        });
+    }
+
+    @Test
+    void shouldNotAllowDeductNegativeAmount() {
+        Player player = new Player("John", 1000.0);
+        assertThrows(IllegalArgumentException.class, () -> {
+            player.deductBalance(-50.0);
+        });
+    }
 }
