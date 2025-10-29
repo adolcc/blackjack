@@ -48,6 +48,4 @@ public class HandTest {
         assertTrue(isBlackjack);
         assertEquals(21, hand.getTotal());
     }
-
-
 }

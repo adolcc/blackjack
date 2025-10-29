@@ -14,4 +14,13 @@ public class PlayerTest {
         assertEquals("Jordan", player.getName());
         assertEquals(1000.0, player.getBalance());
     }
+
+    @Test
+    void shouldHaveEmptyHandWhenCreated() {
+        String playerName = "John";
+        double initialBalance = 1000.0;
+        Player player = new Player(playerName, initialBalance);
+        assertNotNull(player.getHand());
+        assertEquals(0, player.getHand().getTotal());
+    }
 }
