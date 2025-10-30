@@ -1,18 +1,35 @@
 package com.adolcc.blackjack_spring_webflux.domain.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Transient;
 import lombok.Data;
 
+@Entity
+@Table(name = "players")
 @Data
 public class Player {
+    @Id
     private String id;
+    @Column(nullable = false)
     private String name;
     private double balance;
-    private final Hand hand;
+    private int gamesPlayed;
 
-    public Player(String name, double balance) {
+    @Transient
+    private Hand hand;
+
+    public Player() {
+        this.hand = new Hand();
+    }
+
+    public Player(String id, String name, double balance, int gamesPlayed) {
         this.id = id;
         this.name = name;
         this.balance = balance;
+        this.gamesPlayed = gamesPlayed;
         this.hand = new Hand();
     }
 

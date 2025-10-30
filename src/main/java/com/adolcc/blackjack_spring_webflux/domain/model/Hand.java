@@ -8,11 +8,7 @@ import java.util.List;
 
 @Getter
 public class Hand {
-    private List<Card> cards;
-
-    public Hand() {
-        this.cards = new ArrayList<>();
-    }
+    private List<Card> cards = new ArrayList<>();
 
     public int getTotal() {
         return cards.stream()

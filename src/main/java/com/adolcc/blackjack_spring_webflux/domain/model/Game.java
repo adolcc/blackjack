@@ -1,24 +1,18 @@
 package com.adolcc.blackjack_spring_webflux.domain.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Getter
+@Document(collection = "games")
 public class Game {
-    private final Player player;
-    private final Player dealer;
-    private final Deck deck;
-    @Setter
+    @Id
+    private String id;
+    private Player player;
+    private Player dealer;
+    private Deck deck;
     private GameState state;
     private double betAmount;
-
-    public Game(Player player) {
-        this.player = player;
-        this.dealer = new Player("Dealer", 0);
-        this.deck = new Deck();
-        this.state = GameState.BETTING;
-        this.betAmount = 0.0;
-    }
 
     public void placeBet(double amount) {
         if (amount <= 0) {
