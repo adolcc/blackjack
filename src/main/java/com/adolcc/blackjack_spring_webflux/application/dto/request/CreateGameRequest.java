@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateGameRequest {
-
     @NotBlank(message = "Player name is required")
     private String playerName;
 

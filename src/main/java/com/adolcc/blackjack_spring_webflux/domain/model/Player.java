@@ -1,14 +1,16 @@
 package com.adolcc.blackjack_spring_webflux.domain.model;
 
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 public class Player {
-    private final String name;
+    private String id;
+    private String name;
     private double balance;
     private final Hand hand;
 
     public Player(String name, double balance) {
+        this.id = id;
         this.name = name;
         this.balance = balance;
         this.hand = new Hand();
