@@ -7,7 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class BlackjackSpringWebfluxApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BlackjackSpringWebfluxApplication.class, args);
+
+        SpringApplication.run(BlackjackSpringWebfluxApplication.class, args);
 	}
 
 }

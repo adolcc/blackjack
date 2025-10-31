@@ -1,22 +1,15 @@
 package com.adolcc.blackjack_spring_webflux.domain.model;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
-import jakarta.persistence.Transient;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 
-@Entity
-@Table(name = "players")
 @Data
 public class Player {
     @Id
     private String id;
-    @Column(nullable = false)
     private String name;
-    private double balance;
-    private int gamesPlayed;
+    private Double balance;
+    private Integer gamesPlayed;
 
     @Transient
     private Hand hand;
@@ -30,6 +23,14 @@ public class Player {
         this.name = name;
         this.balance = balance;
         this.gamesPlayed = gamesPlayed;
+        this.hand = new Hand();
+    }
+
+    public Player(String name, double balance) {
+        this.id = null;
+        this.name = name;
+        this.balance = balance;
+        this.gamesPlayed = 0;
         this.hand = new Hand();
     }
 

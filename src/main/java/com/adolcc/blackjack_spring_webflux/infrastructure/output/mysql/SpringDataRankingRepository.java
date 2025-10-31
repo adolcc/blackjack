@@ -1,9 +1,11 @@
 package com.adolcc.blackjack_spring_webflux.infrastructure.output.mysql;
 
 import com.adolcc.blackjack_spring_webflux.domain.model.Player;
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
+import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
-public interface SpringDataRankingRepository extends ReactiveCrudRepository<Player, String> {
+@Repository
+public interface SpringDataRankingRepository extends R2dbcRepository<Player, String> {
     Flux<Player> findAllByOrderByBalanceDesc();
 }

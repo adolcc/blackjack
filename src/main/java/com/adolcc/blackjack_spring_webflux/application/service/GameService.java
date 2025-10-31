@@ -1,154 +1,106 @@
 package com.adolcc.blackjack_spring_webflux.application.service;
 
-import com.adolcc.blackjack_spring_webflux.application.dto.request.CreateGameRequest;
-import com.adolcc.blackjack_spring_webflux.application.dto.request.PlaceBetRequest;
-import com.adolcc.blackjack_spring_webflux.application.dto.request.PlayRequest;
-import com.adolcc.blackjack_spring_webflux.application.dto.request.ChangePlayerNameRequest;
-import com.adolcc.blackjack_spring_webflux.application.dto.response.GameResponse;
-import com.adolcc.blackjack_spring_webflux.application.dto.response.RankingResponse;
-import com.adolcc.blackjack_spring_webflux.application.dto.response.PlayerResponse;
+import com.adolcc.blackjack_spring_webflux.domain.port.input.*;
+import com.adolcc.blackjack_spring_webflux.application.dto.request.*;
+import com.adolcc.blackjack_spring_webflux.application.dto.response.*;
+import com.adolcc.blackjack_spring_webflux.domain.port.output.GameRepository;
+import com.adolcc.blackjack_spring_webflux.domain.port.output.RankingRepository;
 import com.adolcc.blackjack_spring_webflux.domain.model.Game;
-import com.adolcc.blackjack_spring_webflux.domain.model.GameState;
 import com.adolcc.blackjack_spring_webflux.domain.model.Player;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Flux;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
-@Slf4j
 @Service
-public class GameService {
+@RequiredArgsConstructor
+public class GameService implements
+        CreateGameUseCase,
+        PlayGameUseCase,
+        GetRankingUseCase,
+        ChangePlayerNameUseCase,
+        GetGameUseCase,
+        DeleteGameUseCase {
 
-    private final Map<String, Game> games = new ConcurrentHashMap<>();
+    private final GameRepository gameRepository;
+    private final RankingRepository rankingRepository;
 
+    @Override
     public Mono<GameResponse> createGame(CreateGameRequest request) {
-        return Mono.fromCallable(() -> {
-            String gameId = UUID.randomUUID().toString();
-            Player player = new Player(request.getPlayerName(), request.getInitialBalance());
-            Game game = new Game(player);
-            games.put(gameId, game);
-            log.info("Game created with ID: {}", gameId);
-            return GameResponse.fromGame(game, gameId);
-        });
+        Game game = new Game(new Player(request.getPlayerName(), request.getInitialBalance()));
+        return gameRepository.save(game)
+                .map(savedGame -> GameResponse.fromGame(savedGame, savedGame.getId()));
     }
 
-    public Mono<GameResponse> placeBet(String gameId, PlaceBetRequest request) {
-        return Mono.fromCallable(() -> {
-            Game game = getGameOrThrow(gameId);
-            if (game.getState() != GameState.BETTING) {
-                throw new IllegalStateException("Cannot place bet in current game state");
-            }
-            game.placeBet(request.getAmount());
-            log.info("Bet placed: {} for game: {}", request.getAmount(), gameId);
-            return GameResponse.fromGame(game, gameId);
-        });
+    @Override
+    public Mono<GameResponse> play(String gameId, PlayRequest request) {
+        return gameRepository.findById(gameId)
+                .flatMap(game -> {
+                    switch (request.getAction().toLowerCase()) {
+                        case "bet" -> {
+                            game.placeBet(request.getAmount());
+                            return gameRepository.save(game)
+                                    .map(g -> GameResponse.fromGame(g, gameId));
+                        }
+                        case "hit" -> {
+                            game.playerHit();
+                            return gameRepository.save(game)
+                                    .map(g -> GameResponse.fromGame(g, gameId));
+                        }
+                        case "stand" -> {
+                            game.playerStand();
+                            game.dealerPlay();
+                            game.settleGame();
+                            Player player = game.getPlayer();
+                            player.setGamesPlayed(player.getGamesPlayed() + 1);
+                            return rankingRepository.save(player)
+                                    .flatMap(savedPlayer ->
+                                            gameRepository.save(game)
+                                                    .map(g -> GameResponse.fromGameWithWinner(g, gameId, game.determineWinner()))
+                                    );
+                        }
+                        default -> {
+                            return Mono.error(new IllegalArgumentException("Unknown action: " + request.getAction()));
+                        }
+                    }
+                });
     }
 
-    public Mono<GameResponse> startGame(String gameId) {
-        return Mono.fromCallable(() -> {
-            Game game = getGameOrThrow(gameId);
-            if (game.getBetAmount() <= 0) {
-                throw new IllegalStateException("Must place bet before starting game");
-            }
-            game.start();
-            log.info("Game started: {}", gameId);
-            return GameResponse.fromGame(game, gameId);
-        });
-    }
-
-    public Mono<GameResponse> playerHit(String gameId) {
-        return Mono.fromCallable(() -> {
-            Game game = getGameOrThrow(gameId);
-            if (game.getState() != GameState.PLAYER_TURN) {
-                throw new IllegalStateException("Cannot hit in current game state");
-            }
-            game.playerHit();
-            if (game.getState() == GameState.FINISHED) {
-                game.settleGame();
-                String winner = game.determineWinner();
-                log.info("Player busted. Game finished: {}", gameId);
-                return GameResponse.fromGameWithWinner(game, gameId, winner);
-            }
-            log.info("Player hit in game: {}", gameId);
-            return GameResponse.fromGame(game, gameId);
-        });
-    }
-
-    public Mono<GameResponse> playerStand(String gameId) {
-        return Mono.fromCallable(() -> {
-            Game game = getGameOrThrow(gameId);
-            if (game.getState() != GameState.PLAYER_TURN) {
-                throw new IllegalStateException("Cannot stand in current game state");
-            }
-            game.playerStand();
-            game.dealerPlay();
-            game.settleGame();
-            String winner = game.determineWinner();
-            log.info("Player stood. Game finished: {}", gameId);
-            return GameResponse.fromGameWithWinner(game, gameId, winner);
-        });
-    }
-
-    public Mono<GameResponse> getGame(String gameId) {
-        return Mono.fromCallable(() -> {
-            Game game = getGameOrThrow(gameId);
-            return GameResponse.fromGame(game, gameId);
-        });
-    }
-
-    public Mono<GameResponse> play(String id, PlayRequest request) {
-        if ("hit".equalsIgnoreCase(request.getAction())) {
-            return playerHit(id);
-        } else if ("stand".equalsIgnoreCase(request.getAction())) {
-            return playerStand(id);
-        } else if ("bet".equalsIgnoreCase(request.getAction())) {
-            PlaceBetRequest betRequest = new PlaceBetRequest(request.getAmount());
-            return placeBet(id, betRequest);
-        }
-        return Mono.error(new IllegalArgumentException("Unknown action: " + request.getAction()));
-    }
-
-    public Mono<Void> deleteGame(String id) {
-        return Mono.fromRunnable(() -> games.remove(id));
-    }
-
+    @Override
     public Flux<RankingResponse> getRanking() {
-        return Flux.fromIterable(
-                games.values().stream()
-                        .map(Game::getPlayer)
-                        .distinct()
-                        .sorted((a, b) -> Double.compare(b.getBalance(), a.getBalance()))
-                        .map(player -> new RankingResponse(
-                                player.getName(),
-                                player.getName(),
-                                0,
-                                player.getBalance()
-                        ))
-                        .collect(Collectors.toList())
-        );
+        return rankingRepository.findAllPlayersOrderedByBalance()
+                .map(player -> new RankingResponse(
+                        player.getId(),
+                        player.getName(),
+                        player.getGamesPlayed(),
+                        player.getBalance()
+                ));
     }
 
+    @Override
     public Mono<PlayerResponse> changePlayerName(String playerId, ChangePlayerNameRequest request) {
-        for (Game game : games.values()) {
-            Player player = game.getPlayer();
-            if (player.getName().equals(playerId)) {
-                player.setName(request.getNewName());
-                return Mono.just(new PlayerResponse(playerId, request.getNewName(), player.getBalance()));
-            }
-        }
-        return Mono.error(new IllegalArgumentException("Player not found: " + playerId));
+        return rankingRepository.findAllPlayersOrderedByBalance()
+                .filter(player -> player.getId().equals(playerId))
+                .next()
+                .flatMap(player -> {
+                    player.setName(request.getNewName());
+                    return rankingRepository.save(player)
+                            .map(savedPlayer -> new PlayerResponse(
+                                    savedPlayer.getId(),
+                                    savedPlayer.getName(),
+                                    savedPlayer.getBalance()
+                            ));
+                });
     }
 
-    private Game getGameOrThrow(String gameId) {
-        Game game = games.get(gameId);
-        if (game == null) {
-            throw new IllegalArgumentException("Game not found: " + gameId);
-        }
-        return game;
+    @Override
+    public Mono<GameResponse> getGame(String gameId) {
+        return gameRepository.findById(gameId)
+                .map(game -> GameResponse.fromGame(game, gameId));
+    }
+
+    @Override
+    public Mono<Void> deleteGame(String gameId) {
+        return gameRepository.deleteById(gameId);
     }
 }
