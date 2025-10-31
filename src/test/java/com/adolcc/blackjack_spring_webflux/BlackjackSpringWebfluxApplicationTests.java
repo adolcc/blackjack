@@ -9,5 +9,4 @@ class BlackjackSpringWebfluxApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

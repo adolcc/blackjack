@@ -3,7 +3,6 @@ package com.adolcc.blackjack_spring_webflux.infrastructure.output.mongodb;
 import com.adolcc.blackjack_spring_webflux.domain.model.Game;
 import com.adolcc.blackjack_spring_webflux.domain.port.output.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
