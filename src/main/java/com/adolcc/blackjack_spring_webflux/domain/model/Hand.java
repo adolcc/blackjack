@@ -10,9 +10,23 @@ public class Hand {
     private List<Card> cards = new ArrayList<>();
 
     public int getTotal() {
-        return cards.stream()
-                .mapToInt(Card::getValue)
-                .sum();
+        int total = 0;
+        int aceCount = 0;
+
+        for (Card card : cards) {
+            int value = card.getValue();
+            total += value;
+            if (card.getRank().equals("A")) {
+                aceCount++;
+            }
+        }
+
+        while (total > 21 && aceCount > 0) {
+            total -= 10;
+            aceCount--;
+        }
+
+        return total;
     }
 
     public void addCard(Card card) {
