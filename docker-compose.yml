@@ -1,5 +1,19 @@
 version: '3.8'
 services:
+  blackjack-app:
+    build: .
+    depends_on:
+      - mysql
+      - mongo
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/blackjack
+      SPRING_R2DBC_URL: r2dbc:mysql://mysql:3306/blackjack
+      SPRING_R2DBC_USERNAME: user
+      SPRING_R2DBC_PASSWORD: pass
+
   mysql:
     image: mysql:8
     environment:
