@@ -39,5 +39,5 @@ Testing: Unit test coverage for Controllers and Services using JUnit and Mockito
 
 Documentation: Automatic API documentation generation with Swagger.
 ___
-### Author
+## Author
 https://github.com/adolcc
