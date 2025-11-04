@@ -12,9 +12,48 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+      
+      - name: Verify Render Service
+        run: |
+          echo "🔍 Verifying Render service..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}")
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "❌ Error: Cannot access service. Check your RENDER_SERVICE_ID and RENDER_API_KEY"
+            exit 1
+          fi
+          
+          echo "✅ Service verified successfully"
         
       - name: Trigger Render Deploy
         run: |
-          curl -X POST \
-          -H "Authorization: Bearer \${{ secrets.RENDER_API_KEY }}" \
-          "https://api.render.com/v1/services/\${{ secrets.RENDER_SERVICE_ID }}/deploys"
+          echo "🚀 Triggering deployment..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys")
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response Body: $BODY"
+          
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "✅ Deploy triggered successfully!"
+            DEPLOY_ID=$(echo "$BODY" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
+            echo "Deploy ID: $DEPLOY_ID"
+            echo "Check status at: https://dashboard.render.com"
+          else
+            echo "❌ Deploy failed with HTTP code: $HTTP_CODE"
+            echo "Response: $BODY"
+            exit 1
+          fi
