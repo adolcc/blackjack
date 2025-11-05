@@ -48,7 +48,7 @@ class GameControllerTest {
         ResponseEntity<GameResponse> response = responseMono.block();
 
         assertNotNull(response);
-        assertEquals(201, response.getStatusCodeValue());
+        assertEquals(201, response.getStatusCode().value());
         assertEquals("Alice", response.getBody().getPlayerName());
         assertEquals(1000.0, response.getBody().getPlayerBalance());
     }
@@ -68,7 +68,7 @@ class GameControllerTest {
         ResponseEntity<GameResponse> response = responseMono.block();
 
         assertNotNull(response);
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         assertEquals("Bob", response.getBody().getPlayerName());
         assertEquals(500.0, response.getBody().getPlayerBalance());
     }
@@ -89,7 +89,7 @@ class GameControllerTest {
         ResponseEntity<GameResponse> response = responseMono.block();
 
         assertNotNull(response);
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         assertEquals("Carol", response.getBody().getPlayerName());
         assertEquals(900.0, response.getBody().getPlayerBalance());
     }
@@ -103,7 +103,7 @@ class GameControllerTest {
         ResponseEntity<Void> response = responseMono.block();
 
         assertNotNull(response);
-        assertEquals(204, response.getStatusCodeValue());
+        assertEquals(204, response.getStatusCode().value());
     }
 
     @Test
@@ -133,7 +133,7 @@ class GameControllerTest {
         ResponseEntity<PlayerResponse> response = responseMono.block();
 
         assertNotNull(response);
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         assertEquals("NewName", response.getBody().getPlayerName());
         assertEquals(1000.0, response.getBody().getBalance());
     }

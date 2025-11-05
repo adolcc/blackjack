@@ -2,13 +2,17 @@ package com.adolcc.blackjack_spring_webflux.domain.model;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
+@Table("players")
 public class Player {
     @Id
     private String id;
     private String name;
     private Double balance;
+    @Column("games_played")
     private Integer gamesPlayed;
 
     @Transient
