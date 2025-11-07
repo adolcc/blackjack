@@ -1,5 +1,4 @@
 **Blackjack** API project implemented with Spring Boot (WebFlux), designed to be purely reactive. The API manages the complete logic of the Blackjack game and utilizes a dual database configuration: MongoDB for non-relational data and MySQL for relational data.
-___
 ---
 ### 🧪 Pruebas Funcionales (Postman)
 
@@ -36,14 +35,12 @@ ___
       <br><strong>5. Documentación (Swagger UI)</strong>
     </td>
     <td align="center">
-      <img src="https://github.com/user-attachments/assets/c4db241b-3271-483b-b4fe-93b19cb3ac8c" width="450" alt="Render Deploy"/>
+      <img src="https://github.com/user-attachments/assets/80097d60-5e6b-4a79-b6cd-7dfd5e924604" width="450" alt="Render Deploy"/>
       <br><strong>6. Despliegue (Render Status)</strong>
     </td>
   </tr>
 </table>
 ---
-___
-### Technology and Dependencies
 
 - Java
 
