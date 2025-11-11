@@ -1,4 +1,4 @@
-package com.adolcc.blackjack_spring_webflux.application.controller;
+package com.adolcc.blackjack_spring_webflux.infrastructure.input.rest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -14,8 +14,9 @@ public class MysqlRankingRepository implements RankingRepository {
 
     @Override
     public Flux<Player> findAllPlayersOrderedByBalance() {
-        return repo.findAllByOrderByBalanceDesc();
+        return repo.findAllPlayersOrderedByBalance();
     }
+
     @Override
     public Mono<Player> save(Player player) {
         return repo.save(player);

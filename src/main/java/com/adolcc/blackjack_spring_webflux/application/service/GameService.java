@@ -27,9 +27,14 @@ public class GameService implements
 
     @Override
     public Mono<GameResponse> createGame(CreateGameRequest request) {
-        Game game = new Game(new Player(request.getPlayerName(), request.getInitialBalance()));
-        return gameRepository.save(game)
-                .map(savedGame -> GameResponse.fromGame(savedGame, savedGame.getId()));
+        Player player = new Player(request.getPlayerName(), request.getInitialBalance());
+
+        return rankingRepository.save(player)
+                .flatMap(savedPlayer -> {
+                    Game game = new Game(savedPlayer);
+                    return gameRepository.save(game)
+                            .map(savedGame -> GameResponse.fromGame(savedGame, savedGame.getId()));
+                });
     }
 
     @Override

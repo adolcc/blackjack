@@ -1,4 +1,4 @@
-package com.adolcc.blackjack_spring_webflux.application.controller;
+package com.adolcc.blackjack_spring_webflux.infrastructure.input.rest;
 
 import com.adolcc.blackjack_spring_webflux.application.dto.request.CreateGameRequest;
 import com.adolcc.blackjack_spring_webflux.application.dto.request.PlayRequest;

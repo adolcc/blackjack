@@ -6,6 +6,7 @@ import com.adolcc.blackjack_spring_webflux.application.dto.response.GameResponse
 import com.adolcc.blackjack_spring_webflux.application.dto.response.PlayerResponse;
 import com.adolcc.blackjack_spring_webflux.application.dto.response.RankingResponse;
 import com.adolcc.blackjack_spring_webflux.application.service.GameService;
+import com.adolcc.blackjack_spring_webflux.infrastructure.input.rest.GameController;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;

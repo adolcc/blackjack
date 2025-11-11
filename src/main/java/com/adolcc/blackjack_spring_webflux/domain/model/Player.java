@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.UUID;
+
 @Data
 @Table("players")
 public class Player {
@@ -20,6 +22,7 @@ public class Player {
 
     public Player() {
         this.hand = new Hand();
+        this.id = UUID.randomUUID().toString();
     }
 
     public Player(String id, String name, double balance, int gamesPlayed) {
@@ -31,6 +34,7 @@ public class Player {
     }
 
     public Player(String name, double balance) {
+        this.id = UUID.randomUUID().toString();
         this.id = null;
         this.name = name;
         this.balance = balance;

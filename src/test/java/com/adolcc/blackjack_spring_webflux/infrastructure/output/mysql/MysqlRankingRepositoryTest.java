@@ -25,12 +25,12 @@ public class MysqlRankingRepositoryTest {
         Player player1 = new Player("1", "Alice", 100.0, 10);
         Player player2 = new Player("2", "Bob", 150.0, 15);
 
-        when(springRepo.findAllByOrderByBalanceDesc()).thenReturn(Flux.just(player2, player1));
+        when(springRepo.findAllPlayersOrderedByBalance()).thenReturn(Flux.just(player2, player1));
 
         Flux<Player> result = rankingRepository.findAllPlayersOrderedByBalance();
 
         assertEquals(2, result.collectList().block().size());
-        verify(springRepo).findAllByOrderByBalanceDesc();
+        verify(springRepo).findAllPlayersOrderedByBalance();
     }
 
     @Test

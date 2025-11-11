@@ -10,12 +10,14 @@ services:
     restart: unless-stopped
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/blackjack
-      SPRING_R2DBC_URL: r2dbc:mysql://mysql:3306/blackjack
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_R2DBC_URL: r2dbc:mariadb://mysql:3306/blackjack
       SPRING_R2DBC_USERNAME: user
       SPRING_R2DBC_PASSWORD: pass
 
   mysql:
-    image: mysql:8
+    image: mariadb:10.11  # Cambiar a MariaDB
+    platform: linux/amd64
     environment:
       MYSQL_DATABASE: blackjack
       MYSQL_USER: user
@@ -24,6 +26,11 @@ services:
     ports:
       - "3306:3306"
     restart: unless-stopped
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    command:
+      - --init-file
+      - /docker-entrypoint-initdb.d/schema.sql
 
   mongo:
     image: mongo:latest
