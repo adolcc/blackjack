@@ -12,6 +12,6 @@ CREATE TABLE IF NOT EXISTS players (
 
 -- Insertar datos de prueba (opcional)
 INSERT IGNORE INTO players (id, name, balance, games_played) VALUES
-('1', 'Alice', 1500.00, 10),
-('2', 'Bob', 1200.50, 8),
-('3', 'Charlie', 800.75, 5);
+('1', 'Pepe', 1500.00, 10),
+('2', 'Adol', 1200.50, 8),
+('3', 'Paco', 800.75, 5);

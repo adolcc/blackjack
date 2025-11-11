@@ -11,4 +11,5 @@ public class PlayerResponse {
     private String playerId;
     private String playerName;
     private double balance;
+    private int gamesPlayed;
 }

@@ -10,15 +10,12 @@ import com.adolcc.blackjack_spring_webflux.domain.model.Player;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Flux;
 
 @Service
 @RequiredArgsConstructor
 public class GameService implements
         CreateGameUseCase,
         PlayGameUseCase,
-        GetRankingUseCase,
-        ChangePlayerNameUseCase,
         GetGameUseCase,
         DeleteGameUseCase {
 
@@ -68,33 +65,6 @@ public class GameService implements
                             return Mono.error(new IllegalArgumentException("Unknown action: " + request.getAction()));
                         }
                     }
-                });
-    }
-
-    @Override
-    public Flux<RankingResponse> getRanking() {
-        return rankingRepository.findAllPlayersOrderedByBalance()
-                .map(player -> new RankingResponse(
-                        player.getId(),
-                        player.getName(),
-                        player.getGamesPlayed(),
-                        player.getBalance()
-                ));
-    }
-
-    @Override
-    public Mono<PlayerResponse> changePlayerName(String playerId, ChangePlayerNameRequest request) {
-        return rankingRepository.findAllPlayersOrderedByBalance()
-                .filter(player -> player.getId().equals(playerId))
-                .next()
-                .flatMap(player -> {
-                    player.setName(request.getNewName());
-                    return rankingRepository.save(player)
-                            .map(savedPlayer -> new PlayerResponse(
-                                    savedPlayer.getId(),
-                                    savedPlayer.getName(),
-                                    savedPlayer.getBalance()
-                            ));
                 });
     }
 

@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class RankingResponse {
     private String playerId;
     private String playerName;
-    private int position;
-    private double score;
+    private int gamesPlayed;
+    private double balance;
 }

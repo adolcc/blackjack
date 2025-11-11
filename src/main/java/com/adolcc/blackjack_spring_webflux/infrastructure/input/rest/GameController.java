@@ -7,6 +7,8 @@ import com.adolcc.blackjack_spring_webflux.application.dto.response.GameResponse
 import com.adolcc.blackjack_spring_webflux.application.dto.response.RankingResponse;
 import com.adolcc.blackjack_spring_webflux.application.dto.response.PlayerResponse;
 import com.adolcc.blackjack_spring_webflux.application.service.GameService;
+import com.adolcc.blackjack_spring_webflux.application.service.RankingService;
+import com.adolcc.blackjack_spring_webflux.application.service.PlayerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,8 @@ import reactor.core.publisher.Flux;
 public class GameController {
 
     private final GameService gameService;
+    private final RankingService rankingService;
+    private final PlayerService playerService;
 
     @PostMapping("/game/new")
     public Mono<ResponseEntity<GameResponse>> createGame(@Valid @RequestBody CreateGameRequest request) {
@@ -47,12 +51,12 @@ public class GameController {
 
     @GetMapping("/ranking")
     public Flux<RankingResponse> getRanking() {
-        return gameService.getRanking();
+        return rankingService.getRanking();
     }
 
     @PutMapping("/player/{playerId}")
     public Mono<ResponseEntity<PlayerResponse>> changePlayerName(@PathVariable String playerId, @Valid @RequestBody ChangePlayerNameRequest request) {
-        return gameService.changePlayerName(playerId, request)
+        return playerService.changePlayerName(playerId, request)  // Ahora usa PlayerService
                 .map(ResponseEntity::ok);
     }
 }
